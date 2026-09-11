@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THE BIG FLY · $BIGFLY</title>
+<meta name="description" content="$BIGFLY is the coin of the fly who read every page of the mortgage bonds, found the rot, and shorted the whole thing years before anyone believed him.">
+<link rel="icon" href="f-favicon.png">
+<meta property="og:title" content="THE BIG FLY · $BIGFLY">
+<meta property="og:description" content="some saw the crash. he saw opportunity.">
+<meta property="og:image" content="f-still-chart.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--ink:#07080a; --panel:#0f1216; --panel2:#151a20; --line:#252c35;
+--amber:#ffb01f; --amber2:#7a5410; --grn:#2fd07a; --red:#e0242f; --red2:#8d1119;
+--cream:#f3ecdc; --mut:#8d97a3;
+--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--serif:"Playfair Display",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+background:var(--ink); color:var(--cream); font-family:var(--mono);
+font-size:15px; line-height:1.55; overflow-x:clip;
+background-image:
+linear-gradient(rgba(255,176,31,.028) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,176,31,.028) 1px,transparent 1px);
+background-size:44px 44px;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+::selection{background:var(--red);color:#fff}
+/* ---------- overlays ---------- */
+.scan,.grain,.vig{position:fixed;inset:0;pointer-events:none;z-index:90}
+.scan{background:repeating-linear-gradient(rgba(0,0,0,.22) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;opacity:.55}
+.grain{background-image:radial-gradient(rgba(255,255,255,.5) .5px,transparent .6px);background-size:3px 3px;mix-blend-mode:overlay;opacity:.11}
+.vig{background:radial-gradient(ellipse at 50% 42%,#0000 46%,rgba(0,0,0,.72) 100%)}
+/* ---------- gate ---------- */
+#gate{position:fixed;inset:0;z-index:200;background:#040506;display:flex;align-items:center;justify-content:center;cursor:pointer;text-align:center;padding:24px}
+#gate .box{max-width:640px;width:100%}
+#gate .term{border:1px solid var(--line);background:#080a0d;padding:26px 22px;box-shadow:0 0 0 1px #000,0 30px 90px rgba(0,0,0,.9)}
+#gate .bar{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.16em;color:var(--amber);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+#gate h1{font-family:var(--serif);font-size:clamp(34px,8vw,64px);line-height:.92;margin:6px 0 4px;letter-spacing:.01em}
+#gate h1 em{font-style:normal;color:var(--red)}
+#gate p{color:var(--mut);font-size:12.5px;letter-spacing:.1em;margin:14px 0 0}
+#gate .go{margin-top:18px;color:var(--amber);font-size:13px;letter-spacing:.24em}
+.cur{display:inline-block;width:9px;height:15px;background:var(--amber);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.fadeout{opacity:0;visibility:hidden;transition:opacity .5s,visibility .5s}
+/* ---------- tape ---------- */
+.tape{position:fixed;top:0;left:0;right:0;height:30px;background:#000;border-bottom:1px solid var(--line);z-index:80;overflow:hidden;display:flex;align-items:center}
+.tape .row{display:inline-flex;white-space:nowrap;animation:mq 46s linear infinite;font-size:12px;letter-spacing:.06em}
+.tape span{padding:0 22px;color:var(--mut)}
+.tape b{color:var(--red);font-weight:600}
+.tape b.up{color:var(--grn)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* ---------- nav ---------- */
+nav{position:fixed;top:30px;left:0;right:0;z-index:79;background:rgba(7,8,10,.9);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav .in{max-width:1240px;margin:0 auto;padding:9px 20px;display:flex;align-items:center;gap:18px}
+nav .brand{font-family:var(--serif);font-weight:900;letter-spacing:.02em;font-size:19px}
+nav .brand i{font-style:normal;color:var(--red)}
+nav .sp{flex:1}
+nav a.nl{font-size:11.5px;letter-spacing:.18em;color:var(--mut);text-decoration:none}
+nav a.nl:hover{color:var(--amber)}
+@media(max-width:760px){nav a.nl{display:none}}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;font-weight:600;
+padding:9px 15px;border:1px solid var(--amber);color:var(--amber);background:transparent;text-decoration:none;cursor:pointer;
+transition:box-shadow .15s,background .15s}
+.btn:hover{background:rgba(255,176,31,.1);box-shadow:0 0 0 1px var(--amber),0 0 22px rgba(255,176,31,.24)}
+.btn.red{border-color:var(--red);color:#ff5c63}
+.btn.red:hover{background:rgba(224,36,47,.12);box-shadow:0 0 0 1px var(--red),0 0 22px rgba(224,36,47,.3)}
+.btn.soon{opacity:.42;cursor:not-allowed}
+.btn.soon:hover{background:transparent;box-shadow:none}
+/* ---------- layout ---------- */
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+section{position:relative;z-index:5}
+.sechead{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:26px}
+.sechead h2{font-family:var(--serif);font-weight:900;font-size:clamp(26px,4.4vw,42px);margin:0;letter-spacing:.01em}
+.sechead .no{font-size:11px;letter-spacing:.22em;color:var(--amber)}
+.sechead .rt{margin-left:auto;font-size:11px;letter-spacing:.16em;color:var(--mut)}
+@media(max-width:600px){.sechead .rt{display:none}}
+/* ---------- hero ---------- */
+#hero{padding:120px 0 40px;position:relative;overflow:hidden}
+#chartbg{position:absolute;inset:0;width:100%;height:100%;opacity:.5;z-index:0}
+#hero .wrap{position:relative;z-index:2}
+.hero-in{display:grid;grid-template-columns:1.06fr .94fr;gap:34px;align-items:center}
+.kick{font-size:11.5px;letter-spacing:.26em;color:var(--amber);margin-bottom:14px}
+.kick s{text-decoration:none;color:var(--mut)}
+.mark{font-family:var(--serif);font-weight:900;line-height:.83;font-size:clamp(56px,10.4vw,124px);letter-spacing:-.01em;margin:0 0 6px;
+color:var(--cream);text-shadow:0 6px 0 #000,4px 4px 0 rgba(224,36,47,.28)}
+.mark .r{color:var(--red);text-shadow:0 6px 0 #000,4px 4px 0 rgba(0,0,0,.6)}
+.tick-badge{display:inline-block;font-size:13px;letter-spacing:.2em;color:var(--ink);background:var(--amber);padding:3px 10px;font-weight:700;margin:6px 0 16px}
+.slog{font-family:var(--serif);font-size:clamp(17px,2.5vw,23px);line-height:1.3;margin:0 0 16px;color:#fff}
+.lore p{color:#c9d1da;margin:0 0 12px;font-size:14.2px;max-width:56ch}
+.lore p b{color:var(--amber);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 16px}
+.ca{display:inline-flex;align-items:center;gap:10px;border:1px dashed var(--line);padding:8px 12px;font-size:12px;color:var(--mut);cursor:pointer;background:#0b0e12}
+.ca b{color:var(--amber);font-weight:600}
+.portrait{position:relative;min-width:0}
+.frame{position:relative;border:1px solid var(--line);background:
+radial-gradient(ellipse at 50% 30%,rgba(224,36,47,.16),transparent 62%),
+linear-gradient(180deg,#12161c,#080a0d);
+padding:16px 14px 0;overflow:hidden}
+.frame:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,transparent 1px 4px);pointer-events:none}
+.frame .hud{position:absolute;top:9px;left:12px;right:12px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:.18em;color:var(--amber);z-index:3}
+.flywrap{position:relative;cursor:pointer;display:block;margin:14px auto 0;max-width:100%;width:min(420px,100%)}
+.flywrap img{width:100%;height:auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.85));transition:transform .12s}
+.flywrap img.hide{display:none}
+.flywrap:active img{transform:translateY(3px) scale(.99)}
+.poke{pointer-events:none;position:absolute;left:50%;transform:translateX(-50%);bottom:8px;z-index:4;font-size:11px;letter-spacing:.16em;
+background:var(--red);color:#fff;padding:6px 12px;border:1px solid #ff6a70;animation:pulseb 1.8s infinite;white-space:nowrap}
+@keyframes pulseb{0%,100%{box-shadow:0 0 0 0 rgba(224,36,47,.55)}60%{box-shadow:0 0 0 14px rgba(224,36,47,0)}}
+.ring{position:absolute;top:16%;left:4%;z-index:4;background:var(--cream);color:#111;font-size:11px;letter-spacing:.12em;padding:7px 11px;border:2px solid #000;box-shadow:4px 4px 0 rgba(0,0,0,.6);display:none}
+.ring.on{display:block}
+#drop{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.coin{position:absolute;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a8,#e8b430 46%,#8d6410);
+border:2px solid #5d4109;box-shadow:0 2px 5px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
+font-size:13px;font-weight:700;color:#5d4109}
+.coin.bill{border-radius:2px;width:32px;height:17px;background:linear-gradient(#c8dfc2,#8fb98a);border:1px solid #2f4a2c;font-size:10px;color:#2f4a2c}
+.gamecta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.gamecta .hint{font-size:11px;color:var(--mut);letter-spacing:.12em}
+/* ---------- desk / game ---------- */
+#desk{padding:64px 0 30px}
+.term{border:1px solid var(--line);background:linear-gradient(180deg,#0d1015,#090b0e);box-shadow:0 40px 90px rgba(0,0,0,.7)}
+.term .tbar{display:flex;align-items:center;gap:12px;background:#000;border-bottom:1px solid var(--line);padding:8px 12px;font-size:11px;letter-spacing:.16em;color:var(--amber)}
+.term .tbar .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1.4s steps(1) infinite}
+.term .tbar .sp{flex:1}
+.term .tbar .st{color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.stat{padding:11px 14px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat i{display:block;font-style:normal;font-size:10px;letter-spacing:.2em;color:var(--mut)}
+.stat b{display:block;font-size:19px;font-weight:600;letter-spacing:.02em;margin-top:2px}
+.stat b.neg{color:var(--red)}
+.stat b.pos{color:var(--grn)}
+.stat b.am{color:var(--amber)}
+.convbar{height:6px;background:#1a1f26;margin-top:7px;border:1px solid var(--line)}
+.convbar i{display:block;height:100%;background:var(--amber);transition:width .3s}
+.play{display:grid;grid-template-columns:1.55fr 1fr;gap:0}
+.pane{padding:16px 16px 20px;min-width:0}
+.pane.rgt{border-left:1px solid var(--line);background:#0a0d10}
+.brief{border:1px solid var(--line);background:#0b0f14;padding:10px 12px;margin-bottom:12px}
+.brief .bl{font-size:10px;letter-spacing:.2em;color:var(--amber)}
+.brief .bt{font-size:14px;margin-top:3px;color:#fff}
+.brief .bt em{font-style:normal;color:var(--red);font-weight:600}
+.timer{height:7px;background:#161b22;border:1px solid var(--line);margin:10px 0 14px;overflow:hidden}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,var(--grn),var(--amber),var(--red));width:100%}
+.loans{display:flex;flex-direction:column;gap:6px}
+.lhead,.loan{display:grid;grid-template-columns:66px 1fr 1fr 92px 62px 66px;gap:8px;align-items:center;font-size:12px}
+.lhead{color:var(--mut);font-size:10px;letter-spacing:.14em;padding:0 10px 4px}
+.loan{background:#11161c;border:1px solid var(--line);padding:10px;cursor:pointer;text-align:left;color:var(--cream);font-family:var(--mono);
+transition:box-shadow .14s,background .14s;position:relative}
+.loan:hover{background:#171e26;box-shadow:inset 0 0 0 1px var(--amber)}
+.loan .id{color:var(--amber);font-weight:600}
+.loan .sub{color:var(--mut);font-size:10.5px}
+.loan.bad{background:#2a0d10;box-shadow:inset 0 0 0 1px var(--red);animation:shakeIn .3s}
+.loan.miss{background:#1a1a1f;opacity:.55}
+.loan.dis{pointer-events:none}
+@keyframes shakeIn{25%{filter:brightness(1.7)}}
+.loan .lab{display:inline-block}
+.loan.bad .lab{animation:nudge .3s}
+@keyframes nudge{50%{transform:translateX(4px)}}
+@media(max-width:820px){
+.lhead{display:none}
+.loan{grid-template-columns:1fr;gap:2px}
+.loan .cellk:before{content:attr(data-k) " · ";color:var(--mut);font-size:10px;letter-spacing:.1em}
+}
+.manifest{list-style:none;margin:0 0 14px;padding:0;font-size:11.5px}
+.manifest li{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px dotted #1d242c;color:var(--mut)}
+.manifest li b{font-weight:600;color:#5d6772}
+.manifest li.done{color:var(--cream)}
+.manifest li.done b{color:var(--grn)}
+.manifest li .mk{width:14px;text-align:center;color:var(--grn)}
+.logbox{border:1px solid var(--line);background:#06080a;height:186px;overflow-y:auto;padding:8px 10px;font-size:11.5px;line-height:1.5}
+.logbox div{color:var(--mut);padding:2px 0;border-bottom:1px dotted #12171d}
+.logbox div b{color:var(--amber);font-weight:500}
+.logbox div.r b{color:#ff5c63}
+.logbox div.g b{color:var(--grn)}
+.rghd{font-size:10px;letter-spacing:.2em;color:var(--amber);margin:0 0 8px}
+@media(max-width:960px){.play{grid-template-columns:1fr}.pane.rgt{border-left:0;border-top:1px solid var(--line)}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}}
+/* ---------- book ---------- */
+#book{padding:64px 0 20px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cards{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);background:#0d1116;padding:16px;min-width:0;position:relative;min-height:170px}
+.card .n{font-size:10px;letter-spacing:.2em;color:var(--amber)}
+.card h3{font-family:var(--serif);font-size:20px;margin:6px 0 8px;letter-spacing:.01em}
+.card p{margin:0;font-size:13px;color:#b9c2cc;line-height:1.5}
+.card.lock{color:#3a424c;border-style:dashed}
+.card.lock h3,.card.lock p,.card.lock .n{filter:blur(4px);opacity:.4;user-select:none}
+.card .sealed{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.2em;color:#4d5661}
+.card.open .sealed{display:none}
+.card.open{animation:pop .35s}
+@keyframes pop{from{transform:scale(.97);box-shadow:0 0 0 2px var(--amber)}}
+/* ---------- notes ---------- */
+#notes{padding:64px 0 20px}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.notes{grid-template-columns:1fr}}
+.note{border:1px solid var(--line);background:#0d1116;min-width:0;display:flex;flex-direction:column}
+.note img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;filter:contrast(1.06) saturate(.94)}
+.note .tx{padding:14px 15px 17px}
+.note .st{font-size:10px;letter-spacing:.2em;color:var(--amber)}
+.note h4{font-family:var(--serif);font-size:19px;margin:6px 0 8px}
+.note p{margin:0;font-size:13px;color:#b9c2cc}
+/* ---------- ticket ---------- */
+#ticket{padding:64px 0 40px}
+.tkt{border:1px solid var(--line);background:
+repeating-linear-gradient(0deg,#0e1217 0 27px,#0b0e13 27px 54px);padding:0}
+.tkt .th{display:flex;justify-content:space-between;background:#000;border-bottom:1px solid var(--line);padding:10px 16px;font-size:11px;letter-spacing:.18em;color:var(--amber)}
+.rows{display:grid;grid-template-columns:repeat(2,1fr)}
+@media(max-width:860px){.rows{grid-template-columns:1fr}}
+.row{padding:16px 18px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);min-width:0}
+.row .k{font-size:10px;letter-spacing:.2em;color:var(--mut)}
+.row .v{font-family:var(--serif);font-size:23px;margin:3px 0 7px;color:#fff}
+.row .v.g{color:var(--grn)}
+.row p{margin:0;font-size:13px;color:#aab4bf}
+/* ---------- win ---------- */
+#rain{position:fixed;inset:0;pointer-events:none;z-index:140;overflow:hidden}
+#win{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;background:rgba(3,4,6,.9);padding:22px}
+#win.on{display:flex}
+#win .w{max-width:560px;width:100%;border:1px solid var(--amber);background:#0b0e13;padding:26px 24px;text-align:center;box-shadow:0 0 60px rgba(255,176,31,.2)}
+#win .w .n{font-size:10px;letter-spacing:.24em;color:var(--amber)}
+#win .w h3{font-family:var(--serif);font-size:clamp(28px,6vw,44px);margin:8px 0 6px;line-height:1}
+#win .w .pl{font-size:30px;color:var(--grn);font-weight:600;margin:10px 0}
+#win .w p{color:#b9c2cc;font-size:13.5px;margin:0 0 16px}
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);margin-top:30px;padding:26px 0 46px;color:var(--mut);font-size:11.5px;letter-spacing:.08em}
+footer .in{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+footer .sp{flex:1}
+.sndbar{position:fixed;left:14px;bottom:14px;z-index:100;display:flex;gap:8px}
+.sndbar button{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;background:#0b0e13;border:1px solid var(--line);color:var(--mut);padding:7px 10px;cursor:pointer}
+.sndbar button.on{color:var(--amber);border-color:var(--amber)}
+@media(max-width:1000px){.hero-in{grid-template-columns:1fr}.hero-in>div:last-child{order:-1}.flywrap{width:min(340px,86%)}#hero{padding:104px 0 26px}}
+@media(max-width:560px){.mark{font-size:clamp(46px,15vw,72px)}.wrap{padding:0 14px}.stat b{font-size:16px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="scan"></div><div class="grain"></div><div class="vig"></div>
+<!-- ============ GATE ============ -->
+<div id="gate">
+<div class="box">
+<div class="term">
+<div class="bar"><span>BLOOMFLY 4000 · TERMINAL</span><span>SEAT 001 · UNPOPULAR</span></div>
+<div style="font-size:11px;letter-spacing:.18em;color:var(--mut)">POSITION REPORT · CONFIDENTIAL</div>
+<h1>THE <em>BIG</em> FLY</h1>
+<p>SOME SAW THE CRASH. HE SAW OPPORTUNITY.</p>
+<div class="go">CLICK ANYWHERE TO OPEN THE DESK <span class="cur"></span></div>
+</div>
+</div>
+</div>
+<!-- ============ TAPE ============ -->
+<div class="tape"><div class="row" id="tapeRow"></div></div>
+<!-- ============ NAV ============ -->
+<nav>
+<div class="in">
+<span class="brand">THE BIG <i>FLY</i></span>
+<span class="sp"></span>
+<a class="nl" href="#desk">THE DESK</a>
+<a class="nl" href="#book">THE BOOK</a>
+<a class="nl" href="#notes">FIELD NOTES</a>
+<a class="nl xLink" id="xBtn" href="#" target="_blank" rel="noopener">X</a>
+<a class="btn red soon" id="buyBtn" href="#">BUY $BIGFLY</a>
+</div>
+</nav>
+<!-- ============ HERO ============ -->
+<section id="hero">
+<canvas id="chartbg"></canvas>
+<div class="wrap">
+<div class="hero-in">
+<div>
+<div class="kick">BASED ON A TRUE STORY<s>*</s> &nbsp;·&nbsp; *ABOUT FLIES, NOT HUMANS</div>
+<h1 class="mark">THE <span class="r">BIG</span><br>FLY</h1>
+<span class="tick-badge">$BIGFLY</span>
+<p class="slog">he read every page of the mortgage bonds, found the rot on page 4,000, and shorted the entire thing while the whole floor laughed.</p>
+<div class="lore">
+<p><b>the simple version:</b> $BIGFLY is the coin of a fly who is short. not short-term. just short. he opened the position years ago, he has never closed it, and every morning he checks the tape and says "still early".</p>
+<p>he sits in a glass office with his shoes on the desk and a cigar he never lights properly. the phone rings all day. it is always the same people asking him to close the trade, and it is always the same answer: <b>no.</b></p>
+</div>
+<div class="cta">
+<a class="btn red soon" href="#" id="buyBtn2">BUY $BIGFLY</a>
+<a class="btn" href="#desk">READ THE BONDS · MINI-GAME</a>
+</div>
+<div class="ca" id="caBox"><span>CONTRACT</span> <b class="ca-val">tbа on launch</b> <span style="color:#4d5661">· click to copy</span></div>
+</div>
+<div class="portrait">
+<div class="frame">
+<div class="hud"><span>LIVE · DESK CAM 01</span><span id="hudClock">09:31:04</span></div>
+<div class="ring" id="ringBubble">INCOMING · GOLDMAN · LINE 2</div>
+<div class="flywrap" id="flyWrap" title="poke him">
+<img id="flyA" src="f-fly-cigar.webp" alt="the fly at his desk, shoes up, cigar in his mouth, entirely unbothered by the rally">
+<img id="flyB" class="hide" src="f-fly-phone.webp" alt="the fly taking another call from a bank that wants him to close the short">
+<div id="drop"></div>
+</div>
+<div class="poke">POKE HIM · HE PAYS</div>
+</div>
+<div class="gamecta">
+<a class="btn" href="#desk">▶ OPEN THE DUE DILIGENCE TERMINAL</a>
+<span class="hint">8 bonds. one rotten loan in each.</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ============ DESK / GAME ============ -->
+<section id="desk"><div class="wrap">
+<div class="sechead"><span class="no">01</span><h2>THE DESK</h2><span class="rt">DUE DILIGENCE · READ THE LOANS · FIND THE ROT</span></div>
+<div class="term">
+<div class="tbar"><span class="dot"></span><span>BLOOMFLY 4000 · DUE DILIGENCE</span><span class="sp"></span><span class="st" id="deskState">AWAITING FIRST BOND</span></div>
+<div class="stats">
+<div class="stat"><i>POSITIONS SHORTED</i><b class="am" id="stPos">0 / 8</b></div>
+<div class="stat"><i>MARK TO MARKET</i><b class="neg" id="stPnl">$0</b></div>
+<div class="stat"><i>CONVICTION</i><b id="stConv">100%</b><div class="convbar"><i id="convFill" style="width:100%"></i></div></div>
+<div class="stat"><i>THE FLOOR SAYS</i><b class="am" id="stSay" style="font-size:13px;letter-spacing:.06em">"he is insane"</b></div>
+</div>
+<div class="play">
+<div class="pane">
+<div class="brief">
+<div class="bl">BOND <span id="bondId">—</span> · ORDER FROM THE FLY</div>
+<div class="bt" id="briefTxt">press start. i will tell you which loan is the rotten one, you find it in the stack.</div>
+</div>
+<div class="timer"><i id="timerFill"></i></div>
+<div class="lhead"><span>LOAN</span><span>BORROWER</span><span>JOB</span><span>INCOME</span><span>FICO</span><span>DOCS</span></div>
+<div class="loans" id="loans"></div>
+<div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+<button class="btn" id="startBtn">START THE BOOK</button>
+<button class="btn" id="resetBtn" style="border-color:#39424d;color:#8d97a3">RESET</button>
+</div>
+</div>
+<div class="pane rgt">
+<p class="rghd">THE BOOK · 8 POSITIONS</p>
+<ul class="manifest" id="manifest"></ul>
+<p class="rghd">TAPE · EVENTS</p>
+<div class="logbox" id="log"><div>08:59 · <b>the fly</b> arrives, nobody looks up</div></div>
+</div>
+</div>
+</div>
+</div></section>
+<!-- ============ BOOK ============ -->
+<section id="book"><div class="wrap">
+<div class="sechead"><span class="no">02</span><h2>THE BOOK</h2><span class="rt">UNLOCKS AS YOU FILL THE POSITIONS</span></div>
+<div class="cards" id="cards"></div>
+</div></section>
+<!-- ============ NOTES ============ -->
+<section id="notes"><div class="wrap">
+<div class="sechead"><span class="no">03</span><h2>FIELD NOTES</h2><span class="rt">DESK CAM · WEEK 61 · STILL SHORT</span></div>
+<div class="notes">
+<div class="note">
+<img src="f-still-phone.webp" alt="the fly on the phone at an open-plan desk, a sign behind him reading bad flies make good money">
+<div class="tx"><span class="st">NOTE 01 · 06:12</span><h4>the calls</h4>
+<p>they call before the market opens to tell him he is wrong, and they call after the close to tell him he is still wrong. he keeps the receiver on his eye and lets them finish. the sign behind his desk has not been taken down once.</p></div>
+</div>
+<div class="note">
+<img src="f-still-chart.webp" alt="the fly in front of a wall of red arrows and falling numbers, head down">
+<div class="tx"><span class="st">NOTE 02 · 16:00</span><h4>the wall</h4>
+<p>when the wall finally turned red he did not celebrate, he just wrote the number down in a notebook nobody has ever seen. someone asked him how he knew. he said he did not know anything, he just read the pages the rest of them skipped.</p></div>
+</div>
+<div class="note">
+<img src="f-still-fore.webp" alt="the fly standing on a suburban street in front of a foreclosure sign">
+<div class="tx"><span class="st">NOTE 03 · SATURDAY</span><h4>the field trip</h4>
+<p>on weekends he drives out to look at the houses in the bonds he owns a short against. he does not talk to anybody there, he just counts the signs on the lawns and writes the number on the back of his hand.</p></div>
+</div>
+</div>
+</div></section>
+<!-- ============ TICKET ============ -->
+<section id="ticket"><div class="wrap">
+<div class="sechead"><span class="no">04</span><h2>THE POSITION</h2><span class="rt">TRADE TICKET · UNSIGNED · UNCHANGED</span></div>
+<div class="tkt">
+<div class="th"><span>TICKET #0001 · $BIGFLY</span><span>SIDE: SHORT EVERYTHING ELSE</span></div>
+<div class="rows">
+<div class="row"><div class="k">SUPPLY</div><div class="v">1,000,000,000</div>
+<p>one billion, printed once, on paper he refused to reprint. he counted it twice, put the sheet in the drawer with the bond prospectus, and has not opened that drawer since.</p></div>
+<div class="row"><div class="k">LIQUIDITY</div><div class="v g">BURNED</div>
+<p>the keys went into the same ashtray as the cigar he never finishes. he says a position you can walk away from is not a position, it is an opinion, and he does not trade opinions.</p></div>
+<div class="row"><div class="k">TAX</div><div class="v g">0 / 0</div>
+<p>nothing on the way in, nothing on the way out. the fly already made his money being early and wrong for four years, he is not going to take a percent off you for buying a jpeg of his face.</p></div>
+<div class="row"><div class="k">OWNERSHIP</div><div class="v g">RENOUNCED</div>
+<p>he signed the contract away without reading it, which he admits is the single most out-of-character thing he has ever done. then he put his shoes back on the desk and went back to watching the tape.</p></div>
+</div>
+</div>
+</div></section>
+<footer><div class="wrap in">
+<span>THE BIG FLY · $BIGFLY</span>
+<span class="sp"></span>
+<span id="footClock">POSITION OPEN · DAY 1,914</span>
+<a class="nl xLink" href="#" target="_blank" rel="noopener" style="text-decoration:none;color:var(--amber)">X / TWITTER</a>
+</div></footer>
+<div id="rain"></div>
+<div id="win"><div class="w">
+<div class="n">FINAL MARK · 16:00</div>
+<h3>THE MARKET FINALLY<br>AGREED WITH HIM</h3>
+<div class="pl" id="winPnl">+$1,340,000,000</div>
+<p>eight bonds, eight rotten loans, one fly who read every page. the floor that laughed at him for four years is now on the phone asking if he is hiring.</p>
+<a class="btn red soon" href="#" id="buyBtn3">BUY $BIGFLY</a>
+<button class="btn" id="closeWin" style="margin-left:8px">CLOSE</button>
+</div></div>
+<div class="sndbar">
+<button id="sfxBtn" class="on">SOUND ON</button>
+<button id="musBtn">MUSIC OFF</button>
+</div>
+<script>
+/* ============ SETTINGS ============ */
+window.CONTRACT = "";      /* адрес контракта */
+window.TWITTER  = "";      /* ссылка на X */
+window.BUY_URL  = "";      /* ссылка на покупку */
+/* ================================== */
+var CA=(window.CONTRACT||"").trim(), TW=(window.TWITTER||"").trim(), BUY=(window.BUY_URL||"").trim();
+if(CA){
+document.querySelectorAll(".ca-val").forEach(function(e){ e.textContent=CA.slice(0,6)+"…"+CA.slice(-4); });
+document.getElementById("caBox").addEventListener("click",function(){
+var b=this.querySelector("b"), old=b.textContent;
+navigator.clipboard.writeText(CA).then(function(){ b.textContent="copied"; setTimeout(function(){ b.textContent=old; },1200); });
+});
+}
+if(TW){ document.querySelectorAll("#xBtn,.xLink").forEach(function(a){ a.href=TW; }); }
+["buyBtn","buyBtn2","buyBtn3"].forEach(function(id){
+var buy=document.getElementById(id); if(!buy) return;
+if(BUY){ buy.href=BUY; buy.target="_blank"; buy.rel="noopener"; buy.classList.remove("soon"); }
+else{ buy.addEventListener("click",function(e){ e.preventDefault(); }); }
+});
+</script>
+<script>
+/* ============ AUDIO ============ */
+var AC=null, sfxOn=true, vol=1;
+function ac(){ try{ if(!AC){ var C=window.AudioContext||window.webkitAudioContext; if(!C) return null; AC=new C(); } if(AC.state==="suspended") AC.resume(); return AC; }catch(e){ return null; } }
+function tone(f1,f2,dur,type,g){
+if(!sfxOn) return; var c=ac(); if(!c) return;
+var o=c.createOscillator(), gg=c.createGain(), t=c.currentTime;
+o.type=type||"sine"; o.frequency.setValueAtTime(f1,t);
+if(f2&&f2!==f1) o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);
+gg.gain.setValueAtTime(.0001,t); gg.gain.exponentialRampToValueAtTime((g||.06)*vol,t+.012);
+gg.gain.exponentialRampToValueAtTime(.0001,t+dur);
+o.connect(gg); gg.connect(c.destination); o.start(t); o.stop(t+dur+.05);
+}
+function noise(dur,g,hp){
+if(!sfxOn) return; var c=ac(); if(!c) return;
+var n=Math.floor(c.sampleRate*dur), b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0);
+for(var i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
+var s=c.createBufferSource(); s.buffer=b;
+var f=c.createBiquadFilter(); f.type="highpass"; f.frequency.value=hp||1400;
+var gg=c.createGain(); gg.gain.value=(g||.05)*vol;
+s.connect(f); f.connect(gg); gg.connect(c.destination); s.start();
+}
+var S={
+key:function(){ tone(1500,900,.05,"square",.03); },
+fill:function(){ tone(420,880,.16,"square",.05); setTimeout(function(){ tone(880,1320,.2,"triangle",.05); },90); },
+wrong:function(){ tone(190,90,.3,"sawtooth",.05); noise(.16,.03,700); },
+coin:function(){ tone(1180,1760,.09,"square",.04); setTimeout(function(){ tone(1760,2400,.1,"square",.03); },70); },
+phone:function(){ tone(950,950,.12,"sine",.05); setTimeout(function(){ tone(760,760,.12,"sine",.05); },160); },
+tickr:function(){ noise(.03,.014,3200); },
+win:function(){ [523,659,784,1047,1319].forEach(function(f,i){ setTimeout(function(){ tone(f,f*1.5,.3,"triangle",.06); },i*130); }); }
+};
+/* ============ MUSIC — nervous trading-floor noir loop ============ */
+/* Cm walking bass + tense high stabs + clock tick, 16 steps */
+var MU={on:false,t:null,step:0,next:0};
+var STEP=.235;
+var BAS=[130.81,0,155.56,0,196.00,0,155.56,0, 116.54,0,146.83,0,174.61,0,146.83,0];
+var MEL=[0,622.25,0,0,523.25,0,0,466.16, 0,587.33,0,0,466.16,0,0,415.30];
+function mn(f,at,dur,type,g,filt){
+var c=ac(); if(!c||!f) return;
+var o=c.createOscillator(), gg=c.createGain(), bf=c.createBiquadFilter();
+o.type=type; o.frequency.setValueAtTime(f,at);
+bf.type="lowpass"; bf.frequency.value=filt||2200;
+gg.gain.setValueAtTime(.0001,at); gg.gain.exponentialRampToValueAtTime(g*vol,at+.02);
+gg.gain.exponentialRampToValueAtTime(.0001,at+dur);
+o.connect(bf); bf.connect(gg); gg.connect(c.destination); o.start(at); o.stop(at+dur+.05);
+}
+function mclick(at,g){
+var c=ac(); if(!c) return;
+var n=Math.floor(c.sampleRate*.02), b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0);
+for(var i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
+var s=c.createBufferSource(); s.buffer=b;
+var f=c.createBiquadFilter(); f.type="highpass"; f.frequency.value=5200;
+var gg=c.createGain(); gg.gain.value=g*vol;
+s.connect(f); f.connect(gg); gg.connect(c.destination); s.start(at);
+}
+function musSchedule(){
+var c=ac(); if(!c) return;
+while(MU.next < c.currentTime+.5){
+var i=MU.step%16, at=Math.max(MU.next,c.currentTime+.02);
+if(BAS[i]) mn(BAS[i],at,.4,"triangle",.075,420);
+if(MEL[i]) mn(MEL[i],at,.5,"square",.021,1900);
+if(i%2===0) mclick(at,.018);
+if(i===0) mn(65.41,at,1.6,"sine",.05,300);
+MU.next+=STEP; MU.step++;
+}
+}
+function musToggle(){
+var b=document.getElementById("musBtn");
+MU.on=!MU.on;
+if(MU.on){ var c=ac(); if(!c){ MU.on=false; return; } MU.next=c.currentTime+.1; MU.t=setInterval(musSchedule,100); b.textContent="MUSIC ON"; b.classList.add("on"); }
+else{ clearInterval(MU.t); MU.t=null; b.textContent="MUSIC OFF"; b.classList.remove("on"); }
+}
+document.getElementById("musBtn").addEventListener("click",musToggle);
+document.getElementById("sfxBtn").addEventListener("click",function(){
+sfxOn=!sfxOn; this.textContent=sfxOn?"SOUND ON":"SOUND OFF"; this.classList.toggle("on",sfxOn); if(sfxOn) S.key();
+});
+document.addEventListener("visibilitychange",function(){
+if(document.hidden&&MU.on&&MU.t){ clearInterval(MU.t); MU.t=null; }
+else if(!document.hidden&&MU.on&&!MU.t){ var c=ac(); if(c){ MU.next=c.currentTime+.1; MU.t=setInterval(musSchedule,100); } }
+});
+</script>
+<script>
+/* ============ GATE ============ */
+(function(){
+var g=document.getElementById("gate"), done=false;
+function open(){
+if(done) return; done=true;
+g.classList.add("fadeout");
+setTimeout(function(){ g.style.display="none"; },520);
+ac(); S.key();
+if(!MU.on) musToggle();
+}
+g.addEventListener("click",open);
+document.addEventListener("keydown",function(e){ if(!done){ open(); } });
+setTimeout(open,25000);
+})();
+/* ============ TAPE ============ */
+(function(){
+var items=[
+["SUBPRIME AAA","-98.4%"],["CDO 07-2","-91.2%"],["FLY/USD","+4,120%",1],
+["THE FLOOR","-100%"],["HIS CONVICTION","+0.0%",1],["LUNCH","skipped"],
+["ABX BBB-","-87.7%"],["PAGE 4,000","found",1],["CIGAR","never lit"],
+["INVESTOR CALLS","+312"],["SHOES ON DESK","yes",1],["MARK TO MARKET","ugly"],
+["BAD FLIES","GOOD MONEY",1],["SLEEP","-64%"],["THE SHORT","STILL OPEN",1]
+];
+function build(){
+return items.map(function(it){
+return "<span>"+it[0]+" <b class=\""+(it[2]?"up":"")+"\">"+it[1]+"</b></span>";
+}).join("");
+}
+document.getElementById("tapeRow").innerHTML=build()+build();
+})();
+/* ============ CLOCK ============ */
+(function(){
+var el=document.getElementById("hudClock"), s=9*3600+31*60+4;
+setInterval(function(){
+s+=1; var h=Math.floor(s/3600)%24, m=Math.floor(s/60)%60, x=s%60;
+el.textContent=("0"+h).slice(-2)+":"+("0"+m).slice(-2)+":"+("0"+x).slice(-2);
+},1000);
+})();
+/* ============ HERO CHART CANVAS ============ */
+(function(){
+var cv=document.getElementById("chartbg"), ctx=cv.getContext("2d"), W=0,H=0, pts=[], t=0;
+function size(){
+var r=cv.parentElement.getBoundingClientRect();
+W=cv.width=Math.max(320,Math.floor(r.width)); H=cv.height=Math.max(320,Math.floor(r.height));
+pts=[]; var y=H*.22;
+for(var i=0;i<160;i++){ y+=(Math.random()-.34)*H*.012; y=Math.max(H*.1,Math.min(H*.9,y)); pts.push(y); }
+}
+function draw(){
+if(!W){ requestAnimationFrame(draw); return; }
+ctx.clearRect(0,0,W,H);
+ctx.strokeStyle="rgba(224,36,47,.14)"; ctx.lineWidth=1;
+for(var gx=0;gx<W;gx+=64){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+for(var gy=0;gy<H;gy+=64){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke(); }
+var step=W/(pts.length-1);
+ctx.beginPath(); ctx.moveTo(0,pts[0]);
+for(var i=1;i<pts.length;i++) ctx.lineTo(i*step,pts[i]);
+ctx.strokeStyle="rgba(224,36,47,.85)"; ctx.lineWidth=2; ctx.stroke();
+ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+var gr=ctx.createLinearGradient(0,0,0,H); gr.addColorStop(0,"rgba(224,36,47,.22)"); gr.addColorStop(1,"rgba(224,36,47,0)");
+ctx.fillStyle=gr; ctx.fill();
+t++;
+if(t%3===0){ pts.shift(); var last=pts[pts.length-1]+(Math.random()-.34)*H*.02; pts.push(Math.max(H*.08,Math.min(H*.95,last))); }
+requestAnimationFrame(draw);
+}
+window.addEventListener("resize",size); size(); draw();
+})();
+/* ============ HERO POKE + COINS ============ */
+var drop=document.getElementById("drop");
+function dropCoin(x,y,host,bill){
+host=host||drop;
+var d=document.createElement("div"); d.className="coin"+(bill?" bill":"");
+d.textContent=bill?"$":"¢";
+var W=host.clientWidth||320, H=host.clientHeight||320;
+if(x===undefined){ x=Math.random()*W; y=-24; }
+d.style.left=(x-13)+"px"; d.style.top=(y-13)+"px"; host.appendChild(d);
+var vx=(Math.random()-.5)*7, vy=-4-Math.random()*5, n=0, rot=(Math.random()-.5)*22, px=x-13, py=y-13;
+(function stp(){
+n++; vy+=.42; px+=vx; py+=vy;
+d.style.transform="translate("+(px-(x-13))+"px,"+(py-(y-13))+"px) rotate("+(n*rot)+"deg)";
+if(n>140||py>H+340){ d.remove(); return; }
+if(n>120) d.style.opacity=String(1-(n-120)/20);
+requestAnimationFrame(stp);
+})();
+}
+(function(){
+var wrap=document.getElementById("flyWrap"), a=document.getElementById("flyA"), b=document.getElementById("flyB"),
+ring=document.getElementById("ringBubble"), pokes=0;
+wrap.addEventListener("click",function(e){
+var r=wrap.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+for(var i=0;i<7;i++) setTimeout(function(){ dropCoin(x+(Math.random()-.5)*70,y+(Math.random()-.5)*40,drop,Math.random()<.45); },i*45);
+S.coin(); pokes++;
+if(pokes%5===0) callFrame(2200);
+});
+function callFrame(ms){
+a.classList.add("hide"); b.classList.remove("hide"); ring.classList.add("on"); S.phone();
+setTimeout(function(){ b.classList.add("hide"); a.classList.remove("hide"); ring.classList.remove("on"); },ms);
+}
+function loop(){
+var wait=9000+Math.random()*14000;
+setTimeout(function(){ callFrame(1800+Math.random()*1400); loop(); },wait);
+}
+loop();
+})();
+</script>
+<script>
+/* ============ GAME · DUE DILIGENCE ============ */
+(function(){
+var NAMES=["r. calloway","d. pham","m. ostrowski","j. bell","t. hargrave","p. iyer","c. nunes","l. brandt","w. okafor","s. vidal","a. mccrae","n. petrov","e. sandoval","k. juhasz","b. tran","f. marchetti"];
+var JOBS=["line cook","dental tech","school bus driver","hvac tech","florist","night nurse","forklift op","paralegal","barber","ups sorter"];
+var BADJOBS=["mall santa (feb)","club dj · 5 mortgages","dog (co-signer)","unemployed magician","his own landlord","stripper · 5 homes","fake dentist","seasonal elf"];
+var ROUNDS=[
+{rows:4,time:13,rule:"no documentation",flav:"bond CDO-07-A. one of these four never handed in a single piece of paper. find him."},
+{rows:5,time:12,rule:"FICO under 500",flav:"CDO-07-B. somebody in here has a credit score that should not exist. bring me the number."},
+{rows:5,time:11,rule:"a job that is not a job",flav:"CDO-08-C. read the occupations out loud. one of them will make you stop."},
+{rows:6,time:11,rule:"no documentation",flav:"CDO-08-D. same trick, thicker stack. the bank buried it in the middle on purpose."},
+{rows:6,time:10,rule:"income marked STATED",flav:"CDO-09-E. stated income means he told them a number and they wrote it down. find that number."},
+{rows:7,time:10,rule:"FICO under 500",flav:"CDO-09-F. the rating agency gave this whole thing a triple-A. keep that in mind while you read."},
+{rows:7,time:9,rule:"a job that is not a job",flav:"CDO-10-G. this is the one my investors are begging me not to short."},
+{rows:7,time:9,rule:"no documentation",flav:"CDO-10-H. last one. after this the phone stops ringing for four years."}
+];
+var CARDS=[
+["PAGE 4,000","he did not get a tip and he did not have a model. he ordered the full prospectus, all four thousand pages of it, and he was the only creature on the floor who opened the box. the rot was on the pages everyone assumed nobody would ever read."],
+["THE SEAT","his desk is the worst one on the floor, right under the vent, and he refuses to move. he says a seat you like is a seat you get comfortable in, and comfortable is how you end up long."],
+["THE CIGAR","the cigar has been in his mouth since 2005 and it has been lit exactly twice. he says he will finish it the day the last bond in his book goes to zero, and not one morning earlier."],
+["THE SIGN","somebody hung BAD FLIES MAKE GOOD MONEY behind his desk as an insult. he liked it so much he had it laminated, and now it survives every office redesign."],
+["THE CALLS","goldman on line two, the investors on line one, his own risk desk on line three. he lets all of them ring, writes the count on a post-it, and puts the post-it in the drawer with the prospectus."],
+["THE FIELD TRIPS","every saturday he drives to the suburbs in the bonds and counts foreclosure signs on the lawns. nobody at the bank has ever done this. he says the numbers on the screen are opinions, the signs on the lawns are facts."],
+["THE FOUR YEARS","being early looks exactly like being wrong, and it looks like it for a very long time. he sat in that chair with his shoes up and his mark bleeding red for four straight years without moving his hand toward the exit."],
+["THE MORNING IT TURNED","the wall went red at 09:41 and the floor went completely silent. he did not stand up, he did not say anything, he just wrote one number in a notebook and asked if anyone was going to get coffee."]
+];
+var pos=0, pnl=0, conv=100, round=null, ti=null, tleft=0, running=false, ended=false;
+var loansEl=document.getElementById("loans"), logEl=document.getElementById("log"), manEl=document.getElementById("manifest");
+var stPos=document.getElementById("stPos"), stPnl=document.getElementById("stPnl"), stConv=document.getElementById("stConv"),
+convFill=document.getElementById("convFill"), stSay=document.getElementById("stSay"), deskState=document.getElementById("deskState"),
+timerFill=document.getElementById("timerFill"), briefTxt=document.getElementById("briefTxt"), bondId=document.getElementById("bondId");
+var SAYS=['"he is insane"','"close the trade"','"who let him buy this"','"he is down again"','"stop taking his calls"','"is he still here?"','"...he might be early"','"get him on the phone"','"he was right"'];
+/* cards */
+var cardsEl=document.getElementById("cards");
+CARDS.forEach(function(c,i){
+var d=document.createElement("div"); d.className="card lock"; d.id="card"+i;
+d.innerHTML='<span class="n">POSITION 0'+(i+1)+'</span><h3>'+c[0]+'</h3><p>'+c[1]+'</p><div class="sealed">SEALED · SHORT POSITION 0'+(i+1)+' TO OPEN</div>';
+cardsEl.appendChild(d);
+});
+/* manifest */
+ROUNDS.forEach(function(r,i){
+var li=document.createElement("li"); li.id="man"+i;
+li.innerHTML='<span class="mk">·</span><b>0'+(i+1)+'</b><span>'+["CDO-07-A","CDO-07-B","CDO-08-C","CDO-08-D","CDO-09-E","CDO-09-F","CDO-10-G","CDO-10-H"][i]+'</span>';
+manEl.appendChild(li);
+});
+function log(txt,cls){
+var h=Math.floor(9+pos*.8), m=Math.floor(Math.random()*60);
+var d=document.createElement("div"); if(cls) d.className=cls;
+d.innerHTML=("0"+h).slice(-2)+":"+("0"+m).slice(-2)+" · "+txt;
+logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight;
+while(logEl.children.length>60) logEl.removeChild(logEl.firstChild);
+}
+function money(n){
+var s=Math.abs(n)>=1e9?(Math.abs(n)/1e9).toFixed(2)+"B":Math.abs(n)>=1e6?(Math.abs(n)/1e6).toFixed(1)+"M":Math.round(Math.abs(n)/1000)+"K";
+return (n<0?"-$":"+$")+s;
+}
+function paint(){
+stPos.textContent=pos+" / 8";
+stPnl.textContent=pnl===0?"$0":money(pnl);
+stPnl.className=pnl>0?"pos":"neg";
+stConv.textContent=conv+"%";
+convFill.style.width=conv+"%";
+stSay.textContent=SAYS[Math.min(SAYS.length-1,pos)];
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function mkRow(bad,rule){
+var fico=bad&&rule==="FICO under 500"?380+Math.floor(Math.random()*110):620+Math.floor(Math.random()*180);
+var doc=bad&&rule==="no documentation"?"NONE":pick(["FULL","FULL","W-2","FULL","W-2"]);
+var job=bad&&rule==="a job that is not a job"?pick(BADJOBS):pick(JOBS);
+var inc=bad&&rule==="income marked STATED"?"STATED":"$"+(31+Math.floor(Math.random()*48))+",400";
+return {name:pick(NAMES),job:job,inc:inc,fico:fico,doc:doc,bad:bad};
+}
+function render(r){
+loansEl.innerHTML="";
+var badIdx=Math.floor(Math.random()*r.rows), used={};
+for(var i=0;i<r.rows;i++){
+var row=mkRow(i===badIdx,r.rule), n=row.name;
+while(used[n]){ n=pick(NAMES); } used[n]=1; row.name=n;
+var el=document.createElement("button");
+el.className="loan"; el.type="button"; el.dataset.bad=row.bad?"1":"0";
+el.innerHTML=
+'<span class="id">L-'+(1400+Math.floor(Math.random()*8000))+'</span>'+
+'<span class="cellk" data-k="BORROWER"><span class="lab">'+row.name+'</span></span>'+
+'<span class="cellk" data-k="JOB"><span class="sub">'+row.job+'</span></span>'+
+'<span class="cellk" data-k="INCOME"><span class="sub">'+row.inc+'</span></span>'+
+'<span class="cellk" data-k="FICO"><span class="sub">'+row.fico+'</span></span>'+
+'<span class="cellk" data-k="DOCS"><span class="sub">'+row.doc+'</span></span>';
+el.addEventListener("click",function(){ hit(this); });
+loansEl.appendChild(el);
+}
+}
+function startRound(){
+if(pos>=8){ finish(); return; }
+round=ROUNDS[pos]; running=true;
+bondId.textContent=["CDO-07-A","CDO-07-B","CDO-08-C","CDO-08-D","CDO-09-E","CDO-09-F","CDO-10-G","CDO-10-H"][pos];
+briefTxt.innerHTML=round.flav+' &nbsp;→&nbsp; <em>'+round.rule.toUpperCase()+'</em>';
+deskState.textContent="READING BOND "+(pos+1)+" OF 8";
+render(round);
+tleft=round.time*1000;
+timerFill.style.width="100%";
+clearInterval(ti);
+var t0=Date.now();
+ti=setInterval(function(){
+var el=Date.now()-t0, p=Math.max(0,1-el/(round.time*1000));
+timerFill.style.width=(p*100)+"%";
+if(p<=0){ clearInterval(ti); timeout(); }
+},60);
+S.key();
+}
+function timeout(){
+running=false;
+conv=Math.max(0,conv-12); if(conv===0) conv=25;
+log("<b>timed out</b> · the bank pulled the file back before you finished reading","r");
+S.wrong(); paint();
+Array.prototype.forEach.call(loansEl.children,function(c){ c.classList.add("dis"); });
+setTimeout(startRound,900);
+}
+function hit(el){
+if(!running) return;
+if(el.dataset.bad==="1"){
+running=false; clearInterval(ti);
+el.classList.add("bad");
+Array.prototype.forEach.call(loansEl.children,function(c){ c.classList.add("dis"); if(c!==el) c.classList.add("miss"); });
+pos++;
+pnl-= (18+Math.random()*26)*1e6;
+document.getElementById("man"+(pos-1)).classList.add("done");
+document.getElementById("man"+(pos-1)).querySelector(".mk").textContent="✓";
+var card=document.getElementById("card"+(pos-1)); card.classList.remove("lock"); card.classList.add("open");
+log("<b>SHORT FILLED</b> · position 0"+pos+" open · premium paid, mark goes red","g");
+if(pos<8) log("the floor laughs, somebody asks if you know what you are doing");
+S.fill(); paint();
+var r=loansEl.getBoundingClientRect();
+for(var i=0;i<6;i++) setTimeout(function(){ dropCoin(undefined,undefined,drop,true); },i*60);
+if(pos>=8){ setTimeout(finish,900); } else { setTimeout(startRound,1100); }
+}else{
+el.classList.add("miss"); el.classList.add("dis");
+conv=Math.max(10,conv-9);
+pnl-=3.5e6;
+log("<b>clean loan</b> · you shorted a man who pays on time. the market can stay irrational longer than you can stay solvent.","r");
+S.wrong(); paint();
+}
+}
+function finish(){
+if(ended) return; ended=true;
+running=false; clearInterval(ti);
+deskState.textContent="THE WALL TURNED RED";
+briefTxt.innerHTML="every bond in the book was rotten. <em>the market finally agreed with him.</em>";
+pnl=1.34e9; paint();
+stPnl.className="pos";
+log("<b>09:41</b> · the wall turns red. the floor goes quiet.","g");
+log("<b>MARK TO MARKET: +$1.34B</b> · he does not stand up","g");
+S.win();
+document.getElementById("winPnl").textContent="+$1,340,000,000";
+document.getElementById("win").classList.add("on");
+var rain=document.getElementById("rain"), n=0;
+var ri=setInterval(function(){ for(var i=0;i<4;i++) dropCoin(Math.random()*window.innerWidth,-30,rain,Math.random()<.5); if(++n>34) clearInterval(ri); },130);
+}
+document.getElementById("startBtn").addEventListener("click",function(){
+ac(); if(pos>=8){ return; }
+if(running) return;
+this.textContent="NEXT BOND";
+log("you order the full prospectus. four thousand pages arrive in a box.");
+startRound();
+});
+document.getElementById("resetBtn").addEventListener("click",function(){
+pos=0;pnl=0;conv=100;ended=false;running=false;clearInterval(ti);
+loansEl.innerHTML=""; timerFill.style.width="100%";
+briefTxt.textContent="press start. i will tell you which loan is the rotten one, you find it in the stack.";
+bondId.textContent="—"; deskState.textContent="AWAITING FIRST BOND";
+document.getElementById("startBtn").textContent="START THE BOOK";
+for(var i=0;i<8;i++){
+var c=document.getElementById("card"+i); c.classList.add("lock"); c.classList.remove("open");
+var m=document.getElementById("man"+i); m.classList.remove("done"); m.querySelector(".mk").textContent="·";
+}
+logEl.innerHTML="<div>08:59 · <b>the fly</b> arrives, nobody looks up</div>";
+paint(); S.key();
+});
+document.getElementById("closeWin").addEventListener("click",function(){ document.getElementById("win").classList.remove("on"); });
+paint();
+})();
+</script>
+</body>
+</html>
